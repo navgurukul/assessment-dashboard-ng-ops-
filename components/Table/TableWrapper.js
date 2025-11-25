@@ -52,7 +52,7 @@ export default function TableWrapper({
             <TableColumn 
               key={column.key}
               align={column.align || "start"}
-              className={column.className || ""}
+              className={column.className || "text-left"}
             >
               {column.label}
             </TableColumn>
