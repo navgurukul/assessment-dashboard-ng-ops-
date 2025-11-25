@@ -1,0 +1,57 @@
+'use client';
+
+import React from 'react';
+import DashboardCard from '@/components/atoms/DashboardCard';
+import PieChart from '@/components/molecules/PieChart';
+import StackedColumnChart from '@/components/molecules/StackedColumnChart';
+import { dashboardCards, locationWiseAssetsData, assetsPerCampusData } from '@/app/dummyJson/dummyJson';
+import { CheckCircle2, Archive, Settings, Wrench } from 'lucide-react';
+
+const iconMap = {
+  CheckCircle2: CheckCircle2,
+  Archive: Archive,
+  Settings: Settings,
+  Wrench: Wrench,
+};
+
+export default function DashboardPage() {
+  return (
+    <div className="p-6 overflow-y-auto max-h-screen"> 
+      {/* Dashboard Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {dashboardCards.map((card) => {
+          const IconComponent = iconMap[card.icon];
+          return (
+            <DashboardCard
+              key={card.id}
+              count={card.count}
+              label={card.label}
+              icon={IconComponent ? <IconComponent className="w-6 h-6 text-white" /> : null}
+              bgColor={card.bgColor}
+            />
+          );
+        })}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PieChart 
+          data={locationWiseAssetsData}
+          title="Location wise Assets"
+          colors={['#93C5FD', '#5EEAD4']}
+          height="500px"
+        />
+        <StackedColumnChart 
+          data={assetsPerCampusData}
+          title="Assets - per Campus"
+          colors={['#60A5FA', '#93C5FD', '#FCA5A5', '#FCD34D', '#FB923C']}
+          height="500px"
+          hAxisTitle="Campus(If Applicable)"
+          vAxisTitle="Campus(If Applicable) Count"
+          showDropdown={true}
+          dropdownLabel="Campus(If Applicable):"
+        />
+      </div>
+    </div>
+  );
+}
