@@ -54,7 +54,7 @@ export default function DashboardPage() {
           <StackedColumnChart 
             data={assetsPerCampusData}
             title="Assets - per Campus"
-            colors={['#4F46E5', '#7C3AED', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444', '#F97316', '#06B6D4', '#14B8A6']}
+            colors={['#93C5FD', '#A5B4FC', '#C4B5FD', '#F9A8D4', '#FDBA74', '#6EE7B7', '#5EEAD4', '#A7F3D0', '#FDE68A', '#BAE6FD', '#A5F3FC']}
             height="500px"
             hAxisTitle="Campus(If Applicable)"
             vAxisTitle="Campus(If Applicable) Count"
