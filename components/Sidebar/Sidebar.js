@@ -12,9 +12,7 @@ import {
   Ticket, 
   Archive, 
   FileText, 
-  Settings,
-  ChevronLeft,
-  ChevronRight
+  Settings, 
 } from 'lucide-react';
 import { menuItems } from '@/dummyJson/dummyJson';
 

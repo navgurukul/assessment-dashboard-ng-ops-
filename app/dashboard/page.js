@@ -6,7 +6,7 @@ import PieChart from '@/components/molecules/PieChart';
 import StackedColumnChart from '@/components/molecules/StackedColumnChart';
 import { dashboardCards, locationWiseAssetsData, assetsPerCampusData } from '@/dummyJson/dummyJson';
 import { CheckCircle2, Archive, Settings, Wrench } from 'lucide-react';
-import DemoTable from '@/components/Table/Table';
+import AssetsTable from '@/components/Table/Table';
 
 const iconMap = {
   CheckCircle2: CheckCircle2,
@@ -49,12 +49,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
         <div className="lg:col-span-7">
           <StackedColumnChart 
             data={assetsPerCampusData}
             title="Assets - per Campus"
-            colors={['#93C5FD', '#A5B4FC', '#C4B5FD', '#F9A8D4', '#FDBA74', '#6EE7B7', '#5EEAD4', '#A7F3D0', '#FDE68A', '#BAE6FD', '#A5F3FC']}
+            colors={['#93C5FD', '#A5B4FC', '#C4B5FD', '#FB923C', '#FDBA74', '#6EE7B7', '#5EEAD4', '#A7F3D0', '#FDE68A', '#BAE6FD', '#A5F3FC']}
             height="500px"
             hAxisTitle="Campus(If Applicable)"
             vAxisTitle="Campus(If Applicable) Count"
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           />
         </div>
       </div>
-      <DemoTable/>
+      <AssetsTable/>
     </div>
   );
 }

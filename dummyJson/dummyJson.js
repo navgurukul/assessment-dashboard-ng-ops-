@@ -10,10 +10,10 @@ export const menuItems = [
 ];
 
 export const dashboardCards = [
-  { id: 1, count: 792, label: 'Active', icon: 'CheckCircle2', bgColor: 'bg-green-100' },
-  { id: 2, count: 278, label: 'In Storage', icon: 'Archive', bgColor: 'bg-blue-100' },
-  { id: 3, count: 321, label: 'Needs Repair', icon: 'Settings', bgColor: 'bg-gray-800' },
-  { id: 4, count: 22, label: 'In Repair', icon: 'Wrench', bgColor: 'bg-gray-400' },
+  { id: 1, count: 792, label: 'Active', icon: 'CheckCircle2', bgColor: 'bg-teal-400' },
+  { id: 2, count: 278, label: 'In Storage', icon: 'Archive', bgColor: 'bg-orange-400' },
+  { id: 3, count: 321, label: 'Needs Repair', icon: 'Settings', bgColor: 'bg-slate-500' },
+  { id: 4, count: 22, label: 'In Repair', icon: 'Wrench', bgColor: 'bg-red-400' },
 ];
 
 export const locationWiseAssetsData = [
