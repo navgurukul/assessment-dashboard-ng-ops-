@@ -47,10 +47,10 @@ export default function DashboardPage() {
           title="Assets - per Campus"
           colors={['#60A5FA', '#93C5FD', '#FCA5A5', '#FCD34D', '#FB923C']}
           height="500px"
-          hAxisTitle="Campus(If Applicable)"
-          vAxisTitle="Campus(If Applicable) Count"
+          hAxisTitle="Campus"
+          vAxisTitle="Campus Count"
           showDropdown={true}
-          dropdownLabel="Campus(If Applicable):"
+          dropdownLabel="Campus:"
         />
       </div>
       <DemoTable/>
