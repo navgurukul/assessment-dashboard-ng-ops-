@@ -74,3 +74,29 @@ export const assetsPageData = [
   { id: 9, assetTag: 'NG-DHAR-L-0112', type: 'Laptop', campus: 'Dharamshala', status: 'In Stock', location: 'Store Room', actions: 'Assign' },
   { id: 10, assetTag: 'NG-KISH-L-0045', type: 'Laptop', campus: 'Kishangarh', status: 'Scrap', location: 'Scrap Room', actions: 'Details' },
 ];
+
+export const componentsPageData = [
+  { id: 1, componentTag: 'RAM-SARJ-8GB-2311-01', type: 'RAM', status: 'Working', installedOn: 'NG-SARJ-L-0315', action: 'Remove' },
+  { id: 2, componentTag: 'SSD-PUNE-512-1211-02', type: 'SSD', status: 'In Stock', installedOn: '-', action: 'Install' },
+  { id: 3, componentTag: 'MB-DANT-INTEL-1211-09', type: 'Motherboard', status: 'Scrap', installedOn: '-', action: 'Details' },
+  { id: 4, componentTag: 'RAM-HIMA-16GB-1811-03', type: 'RAM', status: 'Working', installedOn: 'NG-HIMA-L-0144', action: 'Remove' },
+  { id: 5, componentTag: 'HDD-JABA-1TB-0911-04', type: 'HDD', status: 'In Stock', installedOn: '-', action: 'Install' },
+  { id: 6, componentTag: 'SSD-UDAI-256-1511-05', type: 'SSD', status: 'Working', installedOn: 'NG-UDAI-L-0156', action: 'Remove' },
+  { id: 7, componentTag: 'RAM-RAIP-8GB-2011-06', type: 'RAM', status: 'In Stock', installedOn: '-', action: 'Install' },
+  { id: 8, componentTag: 'MB-AMAR-AMD-1411-07', type: 'Motherboard', status: 'Working', installedOn: 'NG-AMAR-L-0298', action: 'Remove' },
+  { id: 9, componentTag: 'SSD-DHAR-512-1011-08', type: 'SSD', status: 'Scrap', installedOn: '-', action: 'Details' },
+  { id: 10, componentTag: 'RAM-KISH-4GB-0511-10', type: 'RAM', status: 'In Stock', installedOn: '-', action: 'Install' },
+];
+
+export const consignmentsPageData = [
+  { id: 1, code: 'CON-SARJ-241119-REPR-001', courier: 'DTDC', fromTo: 'Sarj -> Vendor', status: 'IN TRANSIT' },
+  { id: 2, code: 'CON-PUNE-221119-TRNF-003', courier: 'Bluedart', fromTo: 'Pune -> Himachal', status: 'DELIVERED' },
+  { id: 3, code: 'CON-HIMA-201119-REPR-005', courier: 'Delhivery', fromTo: 'Himachal -> Vendor', status: 'IN TRANSIT' },
+  { id: 4, code: 'CON-DANT-181119-TRNF-007', courier: 'DTDC', fromTo: 'Dantewada -> Pune', status: 'DELIVERED' },
+  { id: 5, code: 'CON-JABA-151119-REPR-009', courier: 'Bluedart', fromTo: 'Jabalpur -> Vendor', status: 'IN TRANSIT' },
+  { id: 6, code: 'CON-UDAI-131119-TRNF-011', courier: 'Delhivery', fromTo: 'Udaipur -> Raipur', status: 'DELIVERED' },
+  { id: 7, code: 'CON-RAIP-111119-REPR-013', courier: 'DTDC', fromTo: 'Raipur -> Vendor', status: 'IN TRANSIT' },
+  { id: 8, code: 'CON-AMAR-091119-TRNF-015', courier: 'Bluedart', fromTo: 'Amaravati -> Dharamshala', status: 'DELIVERED' },
+  { id: 9, code: 'CON-DHAR-071119-REPR-017', courier: 'Delhivery', fromTo: 'Dharamshala -> Vendor', status: 'IN TRANSIT' },
+  { id: 10, code: 'CON-KISH-051119-TRNF-019', courier: 'DTDC', fromTo: 'Kishangarh -> Sarjapura', status: 'DELIVERED' },
+];
