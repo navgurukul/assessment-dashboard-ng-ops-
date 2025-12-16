@@ -12,7 +12,9 @@ export default function TableWrapper({
   showPagination = true,
   classNames = {},
   ariaLabel = "Data table",
-  onRowClick
+  onRowClick,
+  showCreateButton = false,
+  onCreateClick
 }) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -33,7 +35,19 @@ export default function TableWrapper({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      {title && <h2 className="text-xl font-bold text-gray-800 mb-4">{title}</h2>}
+      {title && (
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+          {showCreateButton && (
+            <button
+              onClick={onCreateClick}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Create
+            </button>
+          )}
+        </div>
+      )}
       
       <Table 
         aria-label={ariaLabel}

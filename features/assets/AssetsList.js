@@ -1,10 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Eye, UserPlus, FileText } from 'lucide-react';
 import TableWrapper from '@/components/Table/TableWrapper';
+import Modal from '@/components/molecules/Modal';
+import GenericForm from '@/components/molecules/GenericForm';
 import useFetch from '@/app/hooks/query/useFetch';
+import {
+  assetFormFields,
+  assetValidationSchema,
+  assetInitialValues,
+} from '@/app/config/formConfigs/assetFormConfig';
 
 const columns = [
   { key: "assetTag", label: "ASSET TAG" },
@@ -20,6 +27,8 @@ const actionOptions = ['View', 'Assign', 'Details'];
 
 export default function AssetsList() {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Fetch assets data from API
   const { data, isLoading, isError, error } = useFetch({
@@ -91,6 +100,46 @@ export default function AssetsList() {
     router.push(`/assets/${asset.id}?id=${asset.id}`);
   };
 
+  const handleCreateClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleFormSubmit = async (values) => {
+    setIsSubmitting(true);
+    try {
+      // Make API call to create asset
+      const response = await fetch('http://13.203.90.62/assets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create asset');
+      }
+
+      const result = await response.json();
+      console.log('Asset created successfully:', result);
+      
+      // Close modal and refresh data
+      setIsModalOpen(false);
+      // You might want to refetch the assets list here
+      // queryClient.invalidateQueries(['assets']);
+      
+    } catch (error) {
+      console.error('Error creating asset:', error);
+      alert('Failed to create asset. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -117,63 +166,39 @@ export default function AssetsList() {
 
   return (
     <div className="space-y-6">
-      {/* Filter Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Search */}
-          <div className="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 flex-1 min-w-[200px]">
-            <Search className="w-4 h-4 text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="Search Assets" 
-              className="outline-none text-sm flex-1"
-            />
-          </div>
-
-          {/* Campus Filter */}
-          <select className="border border-gray-300 rounded px-3 py-2 text-sm outline-none">
-            <option>Campus ▼</option>
-            <option>Sarjapura</option>
-            <option>Pune</option>
-            <option>Himachal</option>
-            <option>Dantewada</option>
-          </select>
-
-          {/* Type Filter */}
-          <select className="border border-gray-300 rounded px-3 py-2 text-sm outline-none">
-            <option>Type ▼</option>
-            <option>Laptop</option>
-            <option>Desktop</option>
-            <option>Tablet</option>
-          </select>
-
-          {/* Status Filter */}
-          <select className="border border-gray-300 rounded px-3 py-2 text-sm outline-none">
-            <option>Status ▼</option>
-            <option>Repair</option>
-            <option>Allocated</option>
-            <option>In Stock</option>
-            <option>Scrap</option>
-          </select>
-
-          {/* Export Button */}
-          <button className="border border-gray-300 rounded px-4 py-2 text-sm font-medium hover:bg-gray-50">
-            Export CSV
-          </button>
-        </div>
-      </div>
+      {/* Filter Bar */} 
 
       {/* Table */}
       <TableWrapper
         data={assetsListData}
         columns={columns}
-        title=""
+        title="Assets"
         renderCell={renderCell}
         itemsPerPage={10}
         showPagination={true}
         ariaLabel="Assets table"
         onRowClick={handleRowClick}
+        showCreateButton={true}
+        onCreateClick={handleCreateClick}
       />
+
+      {/* Create Asset Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Create New Asset"
+        size="large"
+      >
+        <GenericForm
+          fields={assetFormFields}
+          initialValues={assetInitialValues}
+          validationSchema={assetValidationSchema}
+          onSubmit={handleFormSubmit}
+          onCancel={handleCloseModal}
+          submitButtonText="Create Asset"
+          isSubmitting={isSubmitting}
+        />
+      </Modal>
     </div>
   );
 }
