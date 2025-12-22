@@ -5,7 +5,7 @@ export const assetFormFields = [
     name: 'assetTag',
     label: 'Asset Tag',
     type: 'text',
-    placeholder: 'Enter asset tag',
+    placeholder: 'Enter asset tag (e.g., NG-SARJ-L-0001)',
     required: true,
   },
   {
@@ -19,66 +19,69 @@ export const assetFormFields = [
     name: 'brand',
     label: 'Brand',
     type: 'text',
-    placeholder: 'Enter brand name',
+    placeholder: 'Enter brand name (e.g., Dell, HP, Lenovo)',
     required: true,
   },
   {
     name: 'model',
     label: 'Model',
     type: 'text',
-    placeholder: 'Enter model',
+    placeholder: 'Enter model (e.g., Latitude 5400)',
     required: true,
   },
   {
     name: 'specLabel',
-    label: 'Spec Label',
+    label: 'Specification Label',
     type: 'text',
-    placeholder: 'Enter spec label',
+    placeholder: 'Enter full specs (e.g., Intel i5, 8GB RAM, 256GB SSD)',
     required: true,
-  },
-  {
-    name: 'processor',
-    label: 'Processor',
-    type: 'text',
-    placeholder: 'Enter processor',
-    required: true,
-  },
-  {
-    name: 'ramSizeGB',
-    label: 'RAM Size (GB)',
-    type: 'number',
-    placeholder: 'Enter RAM size',
-    required: true,
-    min: 0,
-  },
-  {
-    name: 'storageSizeGB',
-    label: 'Storage Size (GB)',
-    type: 'number',
-    placeholder: 'Enter storage size',
-    required: true,
-    min: 0,
   },
   {
     name: 'serialNumber',
     label: 'Serial Number',
     type: 'text',
-    placeholder: 'Enter serial number',
+    placeholder: 'Enter manufacturer serial number',
     required: true,
   },
   {
     name: 'campusId',
-    label: 'Campus ID',
+    label: 'Campus',
     type: 'text',
     placeholder: 'Enter campus ID',
     required: true,
   },
   {
     name: 'currentLocationId',
-    label: 'Current Location ID',
+    label: 'Current Location',
     type: 'text',
     placeholder: 'Enter current location ID',
     required: true,
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    placeholder: 'Select asset status',
+    required: true,
+    options: [
+      { value: 'IN_STOCK', label: 'In Stock' },
+      { value: 'ALLOCATED', label: 'Allocated' },
+      { value: 'REPAIR', label: 'Under Repair' },
+      { value: 'SCRAP', label: 'Scrap' },
+      { value: 'PARTED_OUT', label: 'Parted Out' },
+    ],
+  },
+  {
+    name: 'condition',
+    label: 'Condition',
+    type: 'select',
+    placeholder: 'Select asset condition',
+    required: true,
+    options: [
+      { value: 'WORKING', label: 'Working' },
+      { value: 'MINOR_ISSUES', label: 'Minor Issues' },
+      { value: 'NOT_WORKING', label: 'Not Working' },
+    ],
   },
   {
     name: 'sourceType',
@@ -89,7 +92,7 @@ export const assetFormFields = [
     options: [
       { value: 'PURCHASED', label: 'Purchased' },
       { value: 'DONATED', label: 'Donated' },
-      { value: 'LEASED', label: 'Leased' },
+      { value: 'PERSONAL', label: 'Personal' },
     ],
   },
   {
@@ -100,15 +103,18 @@ export const assetFormFields = [
     required: true,
   },
   {
-    name: 'charger',
-    label: 'Charger',
-    type: 'checkbox',
+    name: 'cost',
+    label: 'Cost',
+    type: 'number',
+    placeholder: 'Enter purchase cost (optional)',
     required: false,
+    min: 0,
   },
   {
-    name: 'bag',
-    label: 'Bag',
-    type: 'checkbox',
+    name: 'notes',
+    label: 'Notes',
+    type: 'textarea',
+    placeholder: 'Add any additional notes or comments',
     required: false,
   },
 ];
@@ -118,25 +124,24 @@ export const assetValidationSchema = Yup.object().shape({
   assetTypeId: Yup.string().required('Asset type is required'),
   brand: Yup.string().required('Brand is required'),
   model: Yup.string().required('Model is required'),
-  specLabel: Yup.string().required('Spec label is required'),
-  processor: Yup.string().required('Processor is required'),
-  ramSizeGB: Yup.number()
-    .required('RAM size is required')
-    .min(0, 'RAM size must be positive')
-    .integer('RAM size must be an integer'),
-  storageSizeGB: Yup.number()
-    .required('Storage size is required')
-    .min(0, 'Storage size must be positive')
-    .integer('Storage size must be an integer'),
+  specLabel: Yup.string().required('Specification label is required'),
   serialNumber: Yup.string().required('Serial number is required'),
-  campusId: Yup.string().required('Campus ID is required'),
-  currentLocationId: Yup.string().required('Current location ID is required'),
+  campusId: Yup.string().required('Campus is required'),
+  currentLocationId: Yup.string().required('Current location is required'),
+  status: Yup.string()
+    .required('Status is required')
+    .oneOf(['IN_STOCK', 'ALLOCATED', 'REPAIR', 'SCRAP', 'PARTED_OUT'], 'Invalid status'),
+  condition: Yup.string()
+    .required('Condition is required')
+    .oneOf(['WORKING', 'MINOR_ISSUES', 'NOT_WORKING'], 'Invalid condition'),
   sourceType: Yup.string()
     .required('Source type is required')
-    .oneOf(['PURCHASED', 'DONATED', 'LEASED'], 'Invalid source type'),
+    .oneOf(['PURCHASED', 'DONATED', 'PERSONAL'], 'Invalid source type'),
   purchaseDate: Yup.date().required('Purchase date is required'),
-  charger: Yup.boolean(),
-  bag: Yup.boolean(),
+  cost: Yup.number()
+    .nullable()
+    .min(0, 'Cost must be a positive number'),
+  notes: Yup.string(),
 });
 
 export const assetInitialValues = {
@@ -145,14 +150,13 @@ export const assetInitialValues = {
   brand: '',
   model: '',
   specLabel: '',
-  processor: '',
-  ramSizeGB: 0,
-  storageSizeGB: 0,
   serialNumber: '',
   campusId: '',
   currentLocationId: '',
+  status: 'IN_STOCK',
+  condition: 'WORKING',
   sourceType: 'PURCHASED',
   purchaseDate: '',
-  charger: false,
-  bag: false,
+  cost: '',
+  notes: '',
 };

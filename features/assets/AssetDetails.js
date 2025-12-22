@@ -51,10 +51,21 @@ export default function AssetDetails({ assetId, onBack }) {
     const statusMap = {
       'IN_STOCK': 'In Stock',
       'ALLOCATED': 'Allocated',
-      'REPAIR': 'Repair',
+      'REPAIR': 'Under Repair',
       'SCRAP': 'Scrap',
+      'PARTED_OUT': 'Parted Out',
     };
     return statusMap[status] || status;
+  };
+
+  // Map condition to display format
+  const formatCondition = (condition) => {
+    const conditionMap = {
+      'WORKING': 'Working',
+      'MINOR_ISSUES': 'Minor Issues',
+      'NOT_WORKING': 'Not Working',
+    };
+    return conditionMap[condition] || condition;
   };
 
   const displayStatus = formatStatus(assetDetails.status);
@@ -69,6 +80,21 @@ export default function AssetDetails({ assetId, onBack }) {
         return 'text-blue-600';
       case 'SCRAP':
         return 'text-gray-600';
+      case 'PARTED_OUT':
+        return 'text-orange-600';
+      default:
+        return 'text-gray-900';
+    }
+  };
+
+  const getConditionColor = () => {
+    switch (assetDetails.condition) {
+      case 'WORKING':
+        return 'text-green-600';
+      case 'MINOR_ISSUES':
+        return 'text-yellow-600';
+      case 'NOT_WORKING':
+        return 'text-red-600';
       default:
         return 'text-gray-900';
     }
@@ -80,22 +106,20 @@ export default function AssetDetails({ assetId, onBack }) {
       title: 'Quick Info',
       items: [
         { label: 'Status', value: displayStatus, className: `font-semibold ${getStatusColor()}` },
-        { label: 'Condition', value: assetDetails.condition || 'N/A' },
+        { label: 'Condition', value: formatCondition(assetDetails.condition), className: `font-semibold ${getConditionColor()}` },
         { label: 'Campus', value: assetDetails.campusId || 'N/A' },
         { label: 'Location', value: assetDetails.currentLocationId || 'N/A' },
         { label: 'Source Type', value: assetDetails.sourceType || 'N/A' },
       ],
     },
     {
-      title: 'Specs',
+      title: 'Device Information',
       itemsGrid: true, // Enable 2-column grid layout
       items: [
         { label: 'Brand', value: assetDetails.brand || 'N/A' },
         { label: 'Model', value: assetDetails.model || 'N/A' },
-        { label: 'Processor', value: assetDetails.processor || 'N/A' },
-        { label: 'RAM', value: assetDetails.ramSizeGB ? `${assetDetails.ramSizeGB} GB` : 'N/A' },
-        { label: 'Storage', value: assetDetails.storageSizeGB ? `${assetDetails.storageSizeGB} GB` : 'N/A' },
         { label: 'Serial Number', value: assetDetails.serialNumber || 'N/A' },
+        { label: 'Spec Label', value: assetDetails.specLabel || 'N/A', className: 'col-span-2' },
       ],
     },
     {
@@ -103,8 +127,6 @@ export default function AssetDetails({ assetId, onBack }) {
       items: [
         { label: 'Purchase Date', value: assetDetails.purchaseDate ? new Date(assetDetails.purchaseDate).toLocaleDateString() : 'N/A' },
         { label: 'Cost', value: assetDetails.cost ? `₹${assetDetails.cost}` : 'N/A' },
-        { label: 'Charger', value: assetDetails.charger ? 'Yes' : 'No' },
-        { label: 'Bag', value: assetDetails.bag ? 'Yes' : 'No' },
       ],
     },
   ];
@@ -112,18 +134,17 @@ export default function AssetDetails({ assetId, onBack }) {
   // Right column sections (70%) - Larger content cards
   const rightSections = [
     {
-      title: 'Additional Information',
+      title: 'Notes & Additional Information',
       items: [
+        { label: 'Notes', value: assetDetails.notes || 'No notes available' },
         { label: 'Asset Type ID', value: assetDetails.assetTypeId || 'N/A' },
-        { label: 'Spec Label', value: assetDetails.specLabel || 'N/A' },
-        { label: 'Created At', value: new Date(assetDetails.createdAt).toLocaleString() },
-        { label: 'Updated At', value: new Date(assetDetails.updatedAt).toLocaleString() },
       ],
     },
     {
-      title: 'Notes',
+      title: 'System Information',
       items: [
-        { label: 'Notes', value: assetDetails.notes || 'No notes available' },
+        { label: 'Created At', value: assetDetails.createdAt ? new Date(assetDetails.createdAt).toLocaleString() : 'N/A' },
+        { label: 'Updated At', value: assetDetails.updatedAt ? new Date(assetDetails.updatedAt).toLocaleString() : 'N/A' },
       ],
     },
   ];
@@ -131,7 +152,7 @@ export default function AssetDetails({ assetId, onBack }) {
   return (
     <DetailsPage
       title={`ASSET: ${assetDetails.assetTag}`}
-      subtitle={`Status: ${displayStatus} | Condition: ${assetDetails.condition || 'N/A'}`}
+      subtitle={`Status: ${displayStatus} | Condition: ${formatCondition(assetDetails.condition)}`}
       subtitleColor={getStatusColor()}
       leftSections={leftSections}
       rightSections={rightSections}
