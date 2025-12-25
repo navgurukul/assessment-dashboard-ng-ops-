@@ -146,13 +146,13 @@ export const assetValidationSchema = Yup.object().shape({
 
 export const assetInitialValues = {
   assetTag: '',
-  assetTypeId: '',
+  assetTypeId: "8fe51cb1-b713-47b1-a958-a26a082efd7c",
   brand: '',
   model: '',
   specLabel: '',
   serialNumber: '',
-  campusId: '',
-  currentLocationId: '',
+  campusId: '85ebbbce-35b6-4813-a2c6-4fa4f8c91c21',
+  currentLocationId: 'a75ee8db-6ef6-4344-a8fd-5af3609b86d6',
   status: 'IN_STOCK',
   condition: 'WORKING',
   sourceType: 'PURCHASED',
