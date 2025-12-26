@@ -23,7 +23,7 @@ const columns = [
   { key: "actions", label: "ACTIONS" },
 ];
 
-const statusOptions = ['Repair', 'Allocated', 'In Stock', 'Scrap'];
+const statusOptions = ['Under Repair', 'Allocated', 'In Stock', 'Scrap', 'Parted Out'];
 const actionOptions = ['View', 'Assign', 'Details'];
 
 export default function AssetsList() {
@@ -48,8 +48,9 @@ export default function AssetsList() {
       campus: asset.campusId || 'N/A',
       status: asset.status === 'IN_STOCK' ? 'In Stock' : 
               asset.status === 'ALLOCATED' ? 'Allocated' : 
-              asset.status === 'REPAIR' ? 'Repair' : 
-              asset.status === 'SCRAP' ? 'Scrap' : asset.status,
+              asset.status === 'REPAIR' ? 'Under Repair' : 
+              asset.status === 'SCRAP' ? 'Scrap' : 
+              asset.status === 'PARTED_OUT' ? 'Parted Out' : asset.status,
       location: asset.currentLocationId || 'N/A',
       actions: actionOptions[0], // Default to 'View'
       // Store full asset data for details page
@@ -65,10 +66,11 @@ export default function AssetsList() {
         return <span className="font-medium text-gray-800">{cellValue}</span>;
       case "status":
         const statusColors = {
-          'Repair': 'bg-red-100 text-red-800',
+          'Under Repair': 'bg-red-100 text-red-800',
           'Allocated': 'bg-green-100 text-green-800',
           'In Stock': 'bg-blue-100 text-blue-800',
           'Scrap': 'bg-gray-100 text-gray-800',
+          'Parted Out': 'bg-orange-100 text-orange-800',
         };
         return (
           <span className={`px-3 py-1 rounded text-xs font-medium ${statusColors[cellValue] || 'bg-gray-100 text-gray-800'}`}>
