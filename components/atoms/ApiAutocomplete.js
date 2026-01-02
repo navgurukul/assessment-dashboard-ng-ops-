@@ -37,7 +37,7 @@ export default function ApiAutocomplete({
     <label className="block text-sm font-medium text-gray-700 mb-1">
         {label} {isRequired && <span className="text-red-500 ml-1">*</span>}
         </label>
-    <div className='border-1 border-gray-600 rounded-lg' >
+    <div className='border-1 border-gray-600 rounded-lg api-autocomplete-wrapper'>
     
       <Autocomplete
       name={name}
