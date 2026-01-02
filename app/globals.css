@@ -28,3 +28,22 @@ body {
   background-color: white;
   color:"black";
 }
+
+/* ApiAutocomplete inner border remove */
+.api-autocomplete-wrapper [data-slot="input-wrapper"],
+.api-autocomplete-wrapper [data-slot="input-wrapper"]:focus-within,
+.api-autocomplete-wrapper [data-slot="input-wrapper"][data-focus="true"] {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.api-autocomplete-wrapper [data-slot="inner-wrapper"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.api-autocomplete-wrapper [data-slot="input"] {
+  outline: none !important;
+  box-shadow: none !important;
+}
