@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Download, Eye } from 'lucide-react';
 import TableWrapper from '@/components/Table/TableWrapper';
 import CustomButton from '@/components/atoms/CustomButton';
-import useFetch from '@/app/hooks/query/useFetch';
+import { componentsPageData } from '@/dummyJson/dummyJson';
 
 const columns = [
   { key: "componentTag", label: "COMPONENT TAG" },
@@ -17,44 +17,6 @@ const columns = [
 
 export default function ComponentsPage() {
   const router = useRouter();
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-
-  // Fetch components data from API with pagination
-  const { data, isLoading, isError, error } = useFetch({
-    url: `https://asset-dashboard.navgurukul.org/api/components?page=${currentPage}&limit=${pageSize}`,
-    queryKey: ['components', currentPage, pageSize],
-  });
-
-  // Handle page change
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Handle page size change
-  const handlePageSizeChange = (newSize) => {
-    setPageSize(newSize);
-    setCurrentPage(1); // Reset to first page when changing page size
-  };
-
-  // Transform API data to match table structure
-  const componentsListData = React.useMemo(() => {
-    if (!data || !data.data) return [];
-    
-    return data.data.map((component) => ({
-      id: component.id,
-      componentTag: component.componentTag || component.id,
-      type: component.componentType?.name || component.type || 'Unknown',
-      status: component.status === 'IN_STOCK' ? 'In Stock' : 
-              component.status === 'WORKING' ? 'Working' : 
-              component.status === 'INSTALLED' ? 'Installed' :
-              component.status === 'SCRAP' ? 'Scrap' : component.status,
-      installedOn: component.asset?.assetTag || 'Not Installed',
-      action: component.asset ? 'Remove' : 'Install',
-    }));
-  }, [data]);
 
   const handleViewDetails = (componentId) => {
     router.push(`/components/${componentId}?id=${componentId}`);
@@ -124,51 +86,17 @@ export default function ComponentsPage() {
     router.push('/components/create');
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="p-6 overflow-y-auto h-full">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading components...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (isError) {
-    return (
-      <div className="p-6 overflow-y-auto h-full">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <p className="text-red-600 font-medium">Error loading components</p>
-            <p className="text-gray-600 mt-2">{error?.message || 'Something went wrong'}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 overflow-y-auto h-full">
       <TableWrapper
-        data={componentsListData}
+        data={componentsPageData}
         columns={columns}
         title="Components"
         renderCell={renderCell}
-        itemsPerPage={pageSize}
-        showPagination={true}
+        showPagination={false}
         ariaLabel="Components table"
         showCreateButton={true}
         onCreateClick={handleCreateClick}
-        // Server-side pagination props
-        serverPagination={true}
-        paginationData={data?.pagination}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
       />
     </div>
   );
