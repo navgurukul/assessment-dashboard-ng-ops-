@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const assetFormFields = [
   {
@@ -6,7 +7,7 @@ export const assetFormFields = [
     label: 'Asset Type',
     type: 'api-autocomplete',
     placeholder: 'Search and select asset type',
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL + '/asset-types',
+    apiUrl: baseUrl + '/asset-types',
     queryKey: ['asset-types'],
     labelKey: 'name',
     valueKey: 'id',
@@ -68,7 +69,7 @@ export const assetFormFields = [
     label: 'Campus',
     type: 'api-autocomplete',
     placeholder: 'Search and select campus',
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL + '/campuses',
+    apiUrl: baseUrl + '/campuses',
     queryKey: ['campuses'],
     labelKey: 'campusName',
     valueKey: 'id',

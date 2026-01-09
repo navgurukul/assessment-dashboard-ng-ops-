@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const ticketUpdateFormFields = [
   {
@@ -21,7 +22,7 @@ export const ticketUpdateFormFields = [
     label: 'Assign To',
     type: 'api-autocomplete',
     placeholder: 'Search and select user',
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL + '/users',
+    apiUrl: baseUrl + '/users',
     queryKey: ['users'],
     labelKey: 'firstName',
     valueKey: 'id',
