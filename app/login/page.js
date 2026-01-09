@@ -5,13 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/app/context/AuthContext';
 import { authenticateWithGoogle, updateUserReferrer } from '@/app/services/authService';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import toast from 'react-hot-toast';
 import Shuffle from '@/components/atoms/Shuffle';
 import TextType from '@/components/atoms/TextType';
 import TiltedCard from '@/components/atoms/TiltedCard'; 
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated, loading, user } = useAuth();
@@ -498,5 +498,20 @@ export default function LoginPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
