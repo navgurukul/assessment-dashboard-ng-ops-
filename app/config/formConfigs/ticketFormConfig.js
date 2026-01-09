@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const ticketFormFields = [
   {
@@ -19,7 +20,7 @@ export const ticketFormFields = [
     label: 'Asset',
     type: 'api-autocomplete',
     placeholder: 'Search and select asset',
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL + '/assets',
+    apiUrl: baseUrl + '/assets',
     queryKey: ['assets'],
     labelKey: 'assetTag',
     valueKey: 'id',
@@ -30,7 +31,7 @@ export const ticketFormFields = [
     label: 'Campus',
     type: 'api-autocomplete',
     placeholder: 'Search and select campus',
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL + '/campuses',
+    apiUrl: baseUrl + '/campuses',
     queryKey: ['campuses'],
     labelKey: 'campusName',
     valueKey: 'id',
