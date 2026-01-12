@@ -40,8 +40,7 @@ export default function CreateComponent() {
       const docSummary = values.linkedDocuments?.length 
         ? ` - ${values.linkedDocuments.length} document(s) linked`
         : '';
-      
-      // Show success toast
+       
       toast.success(`Component created successfully! Tag: ${values.componentTag}${docSummary}`);
       
       // Navigate back to components list
