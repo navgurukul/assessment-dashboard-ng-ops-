@@ -12,6 +12,7 @@ import {
   componentFormValidationSchema,
   componentFormInitialValues,
 } from '@/app/config/formConfigs/componentFormStepperConfig';
+import { toast } from '@/app/utils/toast';
 
 export default function CreateComponentPage() {
   const router = useRouter();
@@ -19,6 +20,10 @@ export default function CreateComponentPage() {
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
+    
+    // Show loading toast
+    const loadingToastId = toast.loading('Creating component...');
+    
     try {
       console.log('Component created with values:', values);
       console.log('Linked Documents:', values.linkedDocuments);
@@ -29,18 +34,27 @@ export default function CreateComponentPage() {
         values
       );
       
-      const docSummary = values.linkedDocuments?.length 
-        ? `\n${values.linkedDocuments.length} document(s) linked`
-        : '\nNo documents linked';
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
       
-      alert(`Component created successfully!\nComponent Tag: ${values.componentTag}\nType: ${values.componentType}${docSummary}`);
+      const docSummary = values.linkedDocuments?.length 
+        ? ` - ${values.linkedDocuments.length} document(s) linked`
+        : '';
+      
+      // Show success toast
+      toast.success(`Component created successfully! Tag: ${values.componentTag}${docSummary}`);
       
       // Navigate back to components list
       router.push('/components');
       
     } catch (error) {
       console.error('Error creating component:', error);
-      alert('Failed to create component. Please try again.');
+      
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+      
+      // Show error toast
+      toast.error(error?.message || 'Failed to create component. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

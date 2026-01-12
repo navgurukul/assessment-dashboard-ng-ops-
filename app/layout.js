@@ -6,6 +6,7 @@ import ReactQueryProvider from "./helper/ReactQueryProvider";
 import ReduxProvider from "./helper/ReduxProvider";
 import { AuthProvider } from "@/app/context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,6 +31,12 @@ function RootLayout({ children }) {
                   <ClientLayout>
                     {children}
                   </ClientLayout>
+                  <Toaster 
+                    position="top-right" 
+                    richColors 
+                    expand={false}
+                    closeButton
+                  />
                 </ClientProviders>
               </AuthProvider>
             </ReactQueryProvider>

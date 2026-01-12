@@ -22,6 +22,7 @@ import {
   assetTableColumns,
   defaultVisibleColumns,
 } from '@/app/config/tableConfigs/assetTableConfig';
+import { toast } from '@/app/utils/toast';
 
 const statusOptions = ['Under Repair', 'Allocated', 'In Stock', 'Scrap', 'Parted Out'];
 const actionOptions = ['View', 'Assign', 'Details'];
@@ -289,6 +290,10 @@ export default function AssetsList() {
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
+    
+    // Show loading toast
+    const loadingToastId = toast.loading('Creating asset...');
+    
     try {
       // Make API call to create asset
       const response = await fetch(config.getApiUrl(config.endpoints.assets.create), {
@@ -299,12 +304,20 @@ export default function AssetsList() {
         body: JSON.stringify(values),
       });
 
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+
       if (!response.ok) {
-        throw new Error('Failed to create asset');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData?.message || `Failed to create asset (Status: ${response.status})`;
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
       console.log('Asset created successfully:', result);
+      
+      // Show success toast with green color
+      toast.success('Asset created successfully!');
       
       // Close modal and refresh data
       setIsModalOpen(false);
@@ -313,7 +326,9 @@ export default function AssetsList() {
       
     } catch (error) {
       console.error('Error creating asset:', error);
-      alert('Failed to create asset. Please try again.');
+      
+      // Show error toast with red color
+      toast.error(error?.message || 'Failed to create asset. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
