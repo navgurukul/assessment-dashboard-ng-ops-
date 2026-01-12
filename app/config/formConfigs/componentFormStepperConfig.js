@@ -7,15 +7,6 @@ export const componentStepperConfig = [
     description: 'Enter the core details about the component',
     fields: [
       {
-        name: 'componentTag',
-        label: 'Component Tag',
-        type: 'text',
-        placeholder: 'Auto-generated',
-        required: true,
-        disabled: true,
-        helpText: 'Unique identifier for the component'
-      },
-      {
         name: 'componentType',
         label: 'Component Type',
         type: 'select',
@@ -291,7 +282,6 @@ export const componentStepperConfig = [
 
 // Same validation schema
 export const componentFormValidationSchema = Yup.object().shape({
-  componentTag: Yup.string().required('Component tag is required'),
   componentType: Yup.string().required('Component type is required'),
   brand: Yup.string().required('Brand is required'),
   modelNumber: Yup.string().required('Model number is required'),
