@@ -12,6 +12,7 @@ import {
   ticketValidationSchema,
   ticketInitialValues,
 } from '@/app/config/formConfigs/ticketFormConfig';
+import { toast } from '@/app/utils/toast';
 
 export default function CreateTicketPage() {
   const router = useRouter();
@@ -19,6 +20,10 @@ export default function CreateTicketPage() {
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
+    
+    // Show loading toast
+    const loadingToastId = toast.loading('Creating ticket...');
+    
     try {
       console.log('Creating ticket with values:', values);
       
@@ -31,16 +36,26 @@ export default function CreateTicketPage() {
 
       console.log('Ticket created successfully:', result);
       
-      alert(`Ticket created successfully!\nTicket Number: ${result.data.ticketNumber}\nStatus: ${result.data.status}`);
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+      
+      // Show success toast
+      toast.success(`Ticket created successfully! Ticket Number: ${result.data.ticketNumber}`);
       
       // Navigate back to tickets list
       router.push('/tickets');
       
     } catch (error) {
       console.error('Error creating ticket:', error);
+      
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+      
       const errorMessage = error?.message || 'Failed to create ticket';
-      const errorDetails = error?.errors ? `\n${JSON.stringify(error.errors)}` : '';
-      alert(`${errorMessage}${errorDetails}\n\nPlease try again.`);
+      const errorDetails = error?.errors ? ` - ${JSON.stringify(error.errors)}` : '';
+      
+      // Show error toast
+      toast.error(`${errorMessage}${errorDetails}`);
     } finally {
       setIsSubmitting(false);
     }

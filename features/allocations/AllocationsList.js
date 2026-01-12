@@ -13,6 +13,7 @@ import {
   allocationValidationSchema,
   allocationInitialValues,
 } from '@/app/config/formConfigs/allocationFormConfig';
+import { toast } from '@/app/utils/toast';
 
 const columns = [
   { key: "allocationId", label: "ALLOCATION ID" },
@@ -162,6 +163,10 @@ export default function AllocationsList() {
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
+    
+    // Show loading toast
+    const loadingToastId = toast.loading('Creating allocation...');
+    
     try {
       // Prepare data for API
       const allocationData = {
@@ -184,23 +189,31 @@ export default function AllocationsList() {
         body: JSON.stringify(allocationData),
       });
 
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create allocation');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || 'Failed to create allocation';
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
       console.log('Allocation created successfully:', result);
+      
+      // Show success toast
+      toast.success('Allocation created successfully!');
       
       // Close modal and refresh data
       setIsModalOpen(false);
       // You might want to refetch the allocations list here
       // queryClient.invalidateQueries(['allocations']);
       
-      alert('Allocation created successfully!');
     } catch (error) {
       console.error('Error creating allocation:', error);
-      alert(`Failed to create allocation: ${error.message}`);
+      
+      // Show error toast
+      toast.error(error?.message || 'Failed to create allocation. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
