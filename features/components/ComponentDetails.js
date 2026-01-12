@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { AlertTriangle, Calendar, Package, Wrench, ChevronDown, ChevronUp, Clock, HardDrive, Shield, FileText, TestTube, MapPin } from 'lucide-react';
-import useFetch from '@/app/hooks/query/useFetch';
 import ComponentTimeline from './components/ComponentTimeline';
 import { 
   CurrentlyInstalledCard, 
@@ -24,83 +23,25 @@ const tabs = [
   { id: 'location', label: 'Location History', icon: MapPin },
 ];
 
-export default function ComponentDetails({ componentId, onBack }) {
+export default function ComponentDetails({ componentId, componentData, onBack }) {
   const [editMode, setEditMode] = useState(false);
   const [showAllFields, setShowAllFields] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState(null);
   const [activeTab, setActiveTab] = useState('journey');
 
-  // Fetch component details from API
-  // For now, using dummy data. Replace with actual API call when backend is ready.
-  const { data, isLoading, isError, error } = useFetch({
-    url: config.getApiUrl(config.endpoints.components.details(componentId)),
-    queryKey: ['component', componentId],
-    enabled: false, // Disabled for now, using dummy data
-  });
-
-  // Temporary: Use dummy data
-  const [componentDetails, setComponentDetails] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    // Simulate API call with dummy data
-    import('@/dummyJson/dummyJson').then(module => {
-      const dummyData = module.componentDetailsData[componentId];
-      if (dummyData) {
-        setComponentDetails(dummyData);
-      }
-      setLoading(false);
-    });
-  }, [componentId]);
-
-  // Loading state
-  if (loading) {
+  // If no component data is passed, show error
+  if (!componentData) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading component details...</p>
+          <p className="text-red-600 font-medium">Component data not available</p>
+          <p className="text-gray-600 mt-2">Please navigate from the components list</p>
         </div>
       </div>
     );
   }
 
-  // Error state
-  if (!componentDetails) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <p className="text-red-600 font-medium">Component not found</p>
-          <p className="text-gray-600 mt-2">Component ID: {componentId}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Remove the old error handling code below
-  /*
-  // Error state
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <p className="text-red-600 font-medium">Error loading component details</p>
-          <p className="text-gray-600 mt-2">{error?.message || 'Something went wrong'}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data || !data.data) {
-    return (
-      <div className="p-6">
-        <p>Component not found</p>
-      </div>
-    );
-  }
-
-  const componentDetails = data.data;
-  */
+  const componentDetails = componentData;
 
   // Calculate summary statistics
   const calculateAge = (purchaseDate) => {
@@ -128,11 +69,13 @@ export default function ComponentDetails({ componentId, onBack }) {
     return Math.max(currentValue, purchasePrice * 0.1); // Minimum 10% of original value
   };
 
-  const warrantyStatus = calculateWarrantyStatus(componentDetails.warrantyExpiryDate);
+  const warrantyStatus = calculateWarrantyStatus(componentDetails.purchaseDetails?.warrantyExpiryDate);
   const summaryStats = {
-    age: calculateAge(componentDetails.purchaseDate),
+    age: componentDetails.purchaseDetails?.purchaseDate ? calculateAge(componentDetails.purchaseDetails.purchaseDate) : 'N/A',
     devicesUsedIn: componentDetails.previousInstallations?.length || 0,
-    currentValue: Math.round(calculateDepreciation(componentDetails.purchasePrice, componentDetails.purchaseDate)),
+    currentValue: (componentDetails.purchaseDetails?.purchasePrice && componentDetails.purchaseDetails?.purchaseDate) 
+      ? Math.round(calculateDepreciation(componentDetails.purchaseDetails.purchasePrice, componentDetails.purchaseDetails.purchaseDate))
+      : 0,
     ...warrantyStatus
   };
 
@@ -244,7 +187,7 @@ export default function ComponentDetails({ componentId, onBack }) {
                   {componentDetails.status}
                 </span>
                 <span className="text-xs text-gray-600">
-                  {componentDetails.componentType} • {componentDetails.brand} {componentDetails.modelNumber}
+                  {componentDetails.componentType?.name || componentDetails.componentType} • {componentDetails.brand} {componentDetails.model}
                 </span>
               </div>
             </div>
@@ -258,7 +201,7 @@ export default function ComponentDetails({ componentId, onBack }) {
                 <p className="text-sm font-medium text-yellow-900">Warranty Expiring Soon</p>
                 <p className="text-sm text-yellow-700 mt-1">
                   Warranty expires in {warrantyStatus.warrantyDaysLeft} days on{' '}
-                  {new Date(componentDetails.warrantyExpiryDate).toLocaleDateString('en-IN')}
+                  {new Date(componentDetails.purchaseDetails?.warrantyExpiryDate).toLocaleDateString('en-IN')}
                 </p>
               </div>
             </div>
@@ -401,22 +344,22 @@ export default function ComponentDetails({ componentId, onBack }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 mb-1">Component Type</span>
-                    <span className="text-sm font-medium text-gray-900">{componentDetails.componentType}</span>
+                    <span className="text-sm font-medium text-gray-900">{componentDetails.componentType?.name || componentDetails.componentType || 'N/A'}</span>
                   </div>
                   
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 mb-1">Brand</span>
-                    <span className="text-sm font-medium text-gray-900">{componentDetails.brand}</span>
+                    <span className="text-sm font-medium text-gray-900">{componentDetails.brand || 'N/A'}</span>
                   </div>
                   
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 mb-1">Model Number</span>
-                    <span className="text-sm font-medium text-gray-900">{componentDetails.modelNumber}</span>
+                    <span className="text-sm font-medium text-gray-900">{componentDetails.model || 'N/A'}</span>
                   </div>
                   
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 mb-1">Specifications</span>
-                    <span className="text-sm font-medium text-gray-900">{componentDetails.specifications}</span>
+                    <span className="text-sm font-medium text-gray-900">{componentDetails.specifications || 'N/A'}</span>
                   </div>
                   
                   {componentDetails.serialNumber && (
@@ -440,37 +383,41 @@ export default function ComponentDetails({ componentId, onBack }) {
                 {/* Additional fields */}
                 {showAllFields && (
                   <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-gray-500 mb-1">Purchase Date</span>
-                      <span className="text-sm font-medium text-gray-900 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(componentDetails.purchaseDate).toLocaleDateString('en-IN')}
-                      </span>
-                    </div>
+                    {componentDetails.purchaseDetails?.purchaseDate && (
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500 mb-1">Purchase Date</span>
+                        <span className="text-sm font-medium text-gray-900 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(componentDetails.purchaseDetails.purchaseDate).toLocaleDateString('en-IN')}
+                        </span>
+                      </div>
+                    )}
 
-                    {componentDetails.warrantyExpiryDate && (
+                    {componentDetails.purchaseDetails?.warrantyExpiryDate && (
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500 mb-1">Warranty Expiry</span>
                         <span className={`text-sm font-medium flex items-center gap-1 ${
                           warrantyStatus.warrantyExpired ? 'text-red-600' : 'text-green-600'
                         }`}>
                           <Calendar className="w-3 h-3" />
-                          {new Date(componentDetails.warrantyExpiryDate).toLocaleDateString('en-IN')}
+                          {new Date(componentDetails.purchaseDetails.warrantyExpiryDate).toLocaleDateString('en-IN')}
                         </span>
                       </div>
                     )}
 
-                    <div className="flex flex-col">
-                      <span className="text-xs text-gray-500 mb-1">Purchase Price</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        ₹{componentDetails.purchasePrice?.toLocaleString('en-IN')}
-                      </span>
-                    </div>
+                    {componentDetails.purchaseDetails?.purchasePrice && (
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500 mb-1">Purchase Price</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          ₹{componentDetails.purchaseDetails.purchasePrice?.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    )}
 
-                    {componentDetails.vendorName && (
+                    {componentDetails.purchaseDetails?.vendorName && (
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500 mb-1">Vendor</span>
-                        <span className="text-sm font-medium text-gray-900">{componentDetails.vendorName}</span>
+                        <span className="text-sm font-medium text-gray-900">{componentDetails.purchaseDetails.vendorName}</span>
                       </div>
                     )}
                   </div>
@@ -488,46 +435,46 @@ export default function ComponentDetails({ componentId, onBack }) {
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-500 mb-1">Source Type</span>
                     <span className={`text-sm font-medium px-2 py-1 rounded inline-block w-fit ${
-                      componentDetails.sourceType === 'NEW_PURCHASE' 
+                      componentDetails.source === 'NEW_PURCHASE' 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-orange-100 text-orange-800'
                     }`}>
-                      {componentDetails.sourceType === 'NEW_PURCHASE' ? 'New Purchase' : 'Extracted from Device'}
+                      {componentDetails.source === 'NEW_PURCHASE' ? 'New Purchase' : 'Extracted from Device'}
                     </span>
                   </div>
 
-                  {componentDetails.sourceType === 'NEW_PURCHASE' && componentDetails.invoiceNumber && (
+                  {componentDetails.source === 'NEW_PURCHASE' && componentDetails.purchaseDetails?.invoiceNumber && (
                     <div className="flex flex-col">
                       <span className="text-xs text-gray-500 mb-1">Invoice Number</span>
-                      <span className="text-sm font-medium text-gray-900">{componentDetails.invoiceNumber}</span>
+                      <span className="text-sm font-medium text-gray-900">{componentDetails.purchaseDetails.invoiceNumber}</span>
                     </div>
                   )}
 
-                  {componentDetails.sourceType === 'EXTRACTED' && componentDetails.sourceDeviceTag && (
+                  {componentDetails.source === 'EXTRACTED' && componentDetails.extractionDetails?.sourceAssetTag && (
                     <>
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500 mb-1">Source Device</span>
                         <a 
-                          href={`/assets/${componentDetails.sourceDeviceId}`}
+                          href={`/assets/${componentDetails.extractionDetails.sourceAssetId}`}
                           className="text-sm font-medium text-blue-600 hover:text-blue-800"
                         >
-                          {componentDetails.sourceDeviceTag}
+                          {componentDetails.extractionDetails.sourceAssetTag}
                         </a>
                       </div>
                       
-                      {componentDetails.extractionReason && (
+                      {componentDetails.extractionDetails.extractionReason && (
                         <div className="flex flex-col">
                           <span className="text-xs text-gray-500 mb-1">Extraction Reason</span>
-                          <span className="text-sm font-medium text-gray-900">{componentDetails.extractionReason}</span>
+                          <span className="text-sm font-medium text-gray-900">{componentDetails.extractionDetails.extractionReason}</span>
                         </div>
                       )}
 
-                      {componentDetails.extractionTechnician && (
+                      {componentDetails.extractionDetails.extractedBy && (
                         <div className="flex flex-col">
                           <span className="text-xs text-gray-500 mb-1">Extracted By</span>
                           <span className="text-sm font-medium text-gray-900 flex items-center gap-1">
                             <Wrench className="w-3 h-3" />
-                            {componentDetails.extractionTechnician}
+                            {componentDetails.extractionDetails.extractedBy?.name || componentDetails.extractionDetails.extractedBy}
                           </span>
                         </div>
                       )}
@@ -605,19 +552,19 @@ export default function ComponentDetails({ componentId, onBack }) {
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {componentDetails.locationType === 'IN_STOCK' ? (
+                  {componentDetails.status === 'IN_STOCK' ? (
                     <>
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500 mb-1">Campus</span>
-                        <span className="text-sm font-medium text-gray-900">{componentDetails.campus || 'N/A'}</span>
+                        <span className="text-sm font-medium text-gray-900">{componentDetails.campus?.campusName || componentDetails.campus?.name || 'N/A'}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 mb-1">Almirah</span>
-                        <span className="text-sm font-medium text-gray-900">{componentDetails.almirah || 'N/A'}</span>
+                        <span className="text-xs text-gray-500 mb-1">Storage</span>
+                        <span className="text-sm font-medium text-gray-900">{componentDetails.storageId || componentDetails.storage?.name || 'N/A'}</span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500 mb-1">Shelf</span>
-                        <span className="text-sm font-medium text-gray-900">{componentDetails.shelf || 'N/A'}</span>
+                        <span className="text-sm font-medium text-gray-900">{componentDetails.shelfNumber || 'N/A'}</span>
                       </div>
                     </>
                   ) : (
