@@ -147,6 +147,8 @@ export default function FormField({ field, formik }) {
             dependsOn={field.dependsOn}
             dependentValue={dependentValue}
             filterCategory={field.filterCategory}
+            dataPath={field.dataPath}
+            formatLabel={field.formatLabel}
           />
         );
 

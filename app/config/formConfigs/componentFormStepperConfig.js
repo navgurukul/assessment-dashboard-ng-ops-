@@ -75,7 +75,7 @@ export const componentStepperConfig = [
         label: 'Location',
         type: 'api-autocomplete',
         placeholder: 'Search and select location',
-        apiUrl: baseUrl + '/locations/campus',
+        apiUrl: baseUrl + '/locations/campus/',
         queryKey: ['locations'],
         labelKey: 'name',
         valueKey: 'id',
@@ -136,15 +136,15 @@ export const componentStepperConfig = [
       {
         name: 'extractionTechnician',
         label: 'Technician Name',
-        type: 'select',
-        placeholder: 'Select technician',
+        type: 'api-autocomplete',
+        placeholder: 'Search and select technician',
+        apiUrl: baseUrl + '/it-coordinators',
+        queryKey: ['it-coordinators'],
+        valueKey: 'id',
         required: false,
         showIf: { field: 'sourceType', value: 'EXTRACTED' },
-        options: [
-          { value: 'Person A', label: 'Person A' },
-          { value: 'Person B', label: 'Person B' },
-          { value: 'Person C', label: 'Person C' }
-        ]
+        dataPath: 'data.users', // Path to the users array in the API response
+        formatLabel: (user) => `${user.firstName} ${user.lastName}`, // Display full name
       },
       {
         name: 'condition',

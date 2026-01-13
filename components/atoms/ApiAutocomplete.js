@@ -26,6 +26,8 @@ export default function ApiAutocomplete({
   dependsOn = null,
   dependentValue = null,
   filterCategory = null, // Filter items by category (e.g., 'COMPONENT', 'DEVICE')
+  dataPath = null, // Path to nested data in response (e.g., 'data.users')
+  formatLabel = null, // Function to format label from item
 }) {
   // Build the API URL with dependent value if exists
   // Check if we should append as query param or path param
@@ -48,8 +50,14 @@ export default function ApiAutocomplete({
     enabled: !dependsOn || !!dependentValue, // Only fetch if no dependency or dependent value exists
   });
 
+  // Extract data from nested path if dataPath is provided
+  const getNestedData = (obj, path) => {
+    if (!path) return obj?.data || [];
+    return path.split('.').reduce((acc, part) => acc?.[part], obj) || [];
+  };
+
   // Filter items by category if filterCategory is provided
-  const allItems = data?.data || [];
+  const allItems = dataPath ? getNestedData(data, dataPath) : (data?.data || []);
   const items = filterCategory
     ? allItems.filter((item) => item.category === filterCategory)
     : allItems;
@@ -99,7 +107,7 @@ export default function ApiAutocomplete({
     >
       {(item) => (
         <AutocompleteItem key={item[valueKey]}>
-          {item[labelKey]}
+          {formatLabel ? formatLabel(item) : item[labelKey]}
         </AutocompleteItem>
       )}
     </Autocomplete>

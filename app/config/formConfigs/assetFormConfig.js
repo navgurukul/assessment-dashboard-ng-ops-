@@ -80,7 +80,7 @@ export const assetFormFields = [
     label: 'Current Location',
     type: 'api-autocomplete',
     placeholder: 'Search and select location',
-    apiUrl: 'https://asset-dashboard.navgurukul.org/api/locations/campus',
+    apiUrl: baseUrl + '/locations/campus/',
     queryKey: ['locations'],
     labelKey: 'name',
     valueKey: 'id',
