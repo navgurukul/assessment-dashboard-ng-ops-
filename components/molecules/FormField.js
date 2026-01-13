@@ -134,6 +134,7 @@ export default function FormField({ field, formik }) {
             label={label}
             placeholder={isDependentDisabled ? `Please select ${dependsOnField?.replace('Id', '')} first` : placeholder}
             apiUrl={field.apiUrl}
+            queryKey={field.queryKey}
             value={formik.values[name] || ''}
             onChange={(e) => formik.setFieldValue(name, e.target.value)}
             onBlur={() => formik.setFieldTouched(name, true)}
@@ -145,6 +146,7 @@ export default function FormField({ field, formik }) {
             valueKey={field.valueKey || 'id'}
             dependsOn={field.dependsOn}
             dependentValue={dependentValue}
+            filterCategory={field.filterCategory}
           />
         );
 
