@@ -119,10 +119,6 @@ export const componentStepperConfig = [
         required: true,
         showIf: { field: 'sourceType', value: 'EXTRACTED' },
         options: [
-          { value: 'NEW', label: 'New' },
-          { value: 'USED', label: 'Used' },
-          { value: 'REFURBISHED', label: 'Refurbished' },
-          { value: 'FAULTY', label: 'Faulty' },
           { value: 'GOOD', label: 'Good' },
           { value: 'POOR', label: 'Poor' },
           { value: 'MODERATE', label: 'Moderate' }
@@ -346,7 +342,7 @@ export const componentFormValidationSchema = Yup.object().shape({
     .oneOf(['WORKING', 'IN_STOCK', 'INSTALLED', 'UNDER_TESTING', 'FAULTY', 'SCRAP'])
     .required('Status is required'),
   condition: Yup.string()
-    .oneOf(['NEW', 'USED', 'REFURBISHED', 'FAULTY', 'GOOD', 'POOR', 'MODERATE'])
+    .oneOf(['GOOD', 'POOR', 'MODERATE'])
     .when('sourceType', {
       is: 'EXTRACTED',
       then: (schema) => schema.required('Condition is required'),
@@ -383,7 +379,7 @@ export const componentFormInitialValues = {
   locationId: '',
   installedDeviceTag: '',
   installationDate: '',
-  condition: 'NEW',
+  condition: 'GOOD',
   ownedBy: 'lws',
   notes: '',
   documents: []
