@@ -25,6 +25,7 @@ export default function ApiAutocomplete({
   valueKey = 'id',
   dependsOn = null,
   dependentValue = null,
+  filterCategory = null, // Filter items by category (e.g., 'COMPONENT', 'DEVICE')
 }) {
   // Build the API URL with dependent value if exists (append to path)
   const finalApiUrl = dependsOn && dependentValue
@@ -42,7 +43,11 @@ export default function ApiAutocomplete({
     enabled: !dependsOn || !!dependentValue, // Only fetch if no dependency or dependent value exists
   });
 
-  const items = data?.data || [];
+  // Filter items by category if filterCategory is provided
+  const allItems = data?.data || [];
+  const items = filterCategory
+    ? allItems.filter((item) => item.category === filterCategory)
+    : allItems;
 
   return ( 
 
