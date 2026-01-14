@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye } from 'lucide-react';
 import TableWrapper from '@/components/Table/TableWrapper';
+import FilterDropdown from '@/components/molecules/FilterDropdown';
+import ActiveFiltersChips from '@/components/molecules/ActiveFiltersChips';
 import ColumnSelector from '@/components/molecules/ColumnSelector';
 import CustomButton from '@/components/atoms/CustomButton';
 import useFetch from '@/app/hooks/query/useFetch';
@@ -23,6 +25,9 @@ export default function ComponentsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   
+  // Filter state
+  const [filters, setFilters] = useState({});
+  
   // Column visibility management
   const {
     visibleColumns,
@@ -34,19 +39,37 @@ export default function ComponentsList() {
     alwaysVisibleColumns,
   } = useTableColumns(COMPONENT_TABLE_ID, componentTableColumns, defaultVisibleColumns);
   
-  // Build query string with pagination
+  // Build query string with pagination and filters
   const buildQueryString = () => {
     const params = new URLSearchParams();
     params.append('page', currentPage);
     params.append('limit', pageSize);
     
+    if (filters.campus) params.append('campusId', filters.campus);
+    if (filters.componentType) params.append('assetTypeId', filters.componentType);
+    if (filters.source) params.append('source', filters.source);
+    if (filters.condition) params.append('condition', filters.condition);
+    if (filters.status) params.append('status', filters.status);
+    
     return params.toString();
   };
   
-  // Fetch components data from API with pagination
+  // Fetch components data from API with pagination and filters
   const { data, isLoading, isError, error } = useFetch({
     url: `/components?${buildQueryString()}`,
-    queryKey: ['components', currentPage, pageSize],
+    queryKey: ['components', currentPage, pageSize, filters],
+  });
+  
+  // Fetch campus options from API
+  const { data: campusData } = useFetch({
+    url: '/campuses',
+    queryKey: ['campuses'],
+  });
+  
+  // Fetch asset types from API
+  const { data: assetTypesData } = useFetch({
+    url: '/asset-types',
+    queryKey: ['asset-types'],
   });
 
   // Handle page change
@@ -58,6 +81,105 @@ export default function ComponentsList() {
   const handlePageSizeChange = (newSize) => {
     setPageSize(newSize);
     setCurrentPage(1); // Reset to first page when changing page size
+  };
+  
+  // Handle filter change
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+  
+  // Handle removing a single filter chip
+  const handleRemoveFilter = (filterKey) => {
+    const newFilters = { ...filters };
+    delete newFilters[filterKey];
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+  
+  // Transform campus data from API to filter options
+  const campusOptions = React.useMemo(() => {
+    if (!campusData || !campusData.data) return [];
+    
+    return campusData.data.map((campus) => ({
+      value: campus.id,
+      label: campus.campusName,
+    }));
+  }, [campusData]);
+  
+  // Transform asset types data to component type filter options (only COMPONENT category)
+  const componentTypeOptions = React.useMemo(() => {
+    if (!assetTypesData || !assetTypesData.data) return [];
+    
+    // Filter only items with category "COMPONENT"
+    return assetTypesData.data
+      .filter((assetType) => assetType.category === 'COMPONENT')
+      .map((assetType) => ({
+        value: assetType.id,
+        label: assetType.name,
+      }));
+  }, [assetTypesData]);
+  
+  // Source filter options
+  const sourceOptions = [
+    { value: 'NEW_PURCHASE', label: 'New Purchase' },
+    { value: 'EXTRACTED', label: 'Extracted' },
+  ];
+  
+  // Condition filter options
+  const conditionOptions = [
+    { value: 'NEW', label: 'New' },
+    { value: 'GOOD', label: 'Good' },
+    { value: 'WORKING', label: 'Working' },
+    { value: 'DAMAGED', label: 'Damaged' },
+    { value: 'FAULTY', label: 'Faulty' },
+  ];
+  
+  // Status filter options
+  const statusFilterOptions = [
+    { value: 'IN_STOCK', label: 'In Stock' },
+    { value: 'INSTALLED', label: 'Installed' },
+    { value: 'REPAIR', label: 'Repair' },
+    { value: 'SCRAP', label: 'Scrap' },
+    { value: 'SOLD', label: 'Sold' },
+    { value: 'LOST', label: 'Lost' },
+  ];
+  
+  // Get label for a filter value
+  const getFilterLabel = (filterKey, value) => {
+    if (filterKey === 'campus') {
+      const campus = campusOptions.find(opt => opt.value === value);
+      return campus ? campus.label : value;
+    }
+    if (filterKey === 'componentType') {
+      const componentType = componentTypeOptions.find(opt => opt.value === value);
+      return componentType ? componentType.label : value;
+    }
+    if (filterKey === 'source') {
+      const source = sourceOptions.find(opt => opt.value === value);
+      return source ? source.label : value;
+    }
+    if (filterKey === 'condition') {
+      const condition = conditionOptions.find(opt => opt.value === value);
+      return condition ? condition.label : value;
+    }
+    if (filterKey === 'status') {
+      const status = statusFilterOptions.find(opt => opt.value === value);
+      return status ? status.label : value;
+    }
+    return value;
+  };
+  
+  // Get category name for display
+  const getCategoryName = (filterKey) => {
+    const categoryNames = {
+      campus: 'Campus',
+      componentType: 'Component Type',
+      source: 'Source',
+      condition: 'Condition',
+      status: 'Status'
+    };
+    return categoryNames[filterKey] || filterKey;
   };
 
   // Transform API data to match table structure
@@ -224,6 +346,18 @@ export default function ComponentsList() {
         onRowClick={handleRowClick}
         showCreateButton={true}
         onCreateClick={handleCreateClick}
+        // Filter component
+        filterComponent={
+          <FilterDropdown
+            onFilterChange={handleFilterChange}
+            campusOptions={campusOptions}
+            componentTypeOptions={componentTypeOptions}
+            sourceOptions={sourceOptions}
+            conditionOptions={conditionOptions}
+            statusOptions={statusFilterOptions}
+            selectedFilters={filters}
+          />
+        }
         // Column selector component
         columnSelectorComponent={
           <ColumnSelector
@@ -233,6 +367,15 @@ export default function ComponentsList() {
             onToggleColumn={toggleColumn}
             onShowAll={showAllColumns}
             onResetToDefault={resetToDefault}
+          />
+        }
+        // Active filters chips component
+        activeFiltersComponent={
+          <ActiveFiltersChips
+            filters={filters}
+            onRemoveFilter={handleRemoveFilter}
+            getCategoryName={getCategoryName}
+            getFilterLabel={getFilterLabel}
           />
         }
         // Server-side pagination props
